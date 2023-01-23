@@ -1,0 +1,40 @@
+.Game, .Result{
+    width: 100%;
+    background-color: #2b87d1;
+    color: #ffffff;
+    text-align: center;
+    height: 540px;
+
+}
+
+.Icon{
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    margin-top: 150px;
+}
+
+.Title, .ResultText{
+    font-size: 80px;
+}
+
+.Content{
+    font-size: 24px;
+}
+
+.Hidden{
+    display: none;
+}
+
+.Red{
+    background-color: #ce2636;
+}
+
+.Green{
+    background-color: #4bdb6a;
+}
+
+.Active{
+    background-color: #ffffff !important;
+    transition: all 0.1s;
+}
