@@ -6,15 +6,26 @@ const Result = document.querySelector(".Result");
 const ResultText = document.querySelector(".ResultText");
 const RestartButton = document.querySelector(".RestartButton");
 const SaveRecordButton = document.querySelector(".SaveRecordButton");
+const RecordPanel = document.querySelector('.RecordPanel');
 
 
 let step = 0;
+let FlsahTimer = 0;
 let ClickTimer = 0;
 let StartTime = 0;
 let RecordTime = 0;
 let Record = [];
+let Ranking = [];
+let IsSaved = false;
 
-RestartButton.addEventListener('click',Reset);
+FlashTimer = setInterval(() => {
+    Icon.classList.toggle('Flash');
+}, 1000);
+
+
+RestartButton.addEventListener('click', Reset);
+
+SaveRecordButton.addEventListener('click', SaveData);
 
 Game.addEventListener("click", () => {
     switch (step) {
@@ -33,8 +44,6 @@ Game.addEventListener("click", () => {
     }
 })
 
-
-
 function prepare() {
     step = 1;
     Icon.src = "./img/threedot.png";
@@ -42,6 +51,9 @@ function prepare() {
     Title.innerHTML = "기다리세요";
     Content.classList.add("Hidden");
     ClickTimer = setTimeout(WaitClick, (Math.random() * 4000) + 2000);
+    clearInterval(FlashTimer);
+    Icon.classList.remove('Flash');
+
 }
 
 function WaitClick() {
@@ -54,12 +66,11 @@ function WaitClick() {
 }
 
 function ResultClick() {
-    step = 3;
     const now = new Date();
+    step = 3;
     RecordTime = now.getTime();
     Record.push(RecordTime - StartTime);
-    if(Record.length == 5)
-    {
+    if (Record.length == 5) {
         PrintResult();
         return;
     }
@@ -91,6 +102,9 @@ function Reset() {
     Record = [];
     Game.classList.remove("Red");
     Game.classList.remove("Green");
+    FlashTimer = setInterval(() => {
+        Icon.classList.toggle('Flash');
+    }, 1000);
 
 }
 
@@ -98,4 +112,35 @@ function PrintResult() {
     Game.classList.add('Hidden');
     Result.classList.remove('Hidden');
     ResultText.innerHTML = `${Record.reduce((a, b) => { return a + b }) / 5}ms`;
+    IsSaved = false;
 }
+
+function SaveData() {
+    if (!IsSaved) {
+        IsSaved = true;
+        Ranking.push(Record.reduce((a, b) => { return a + b }) / 5);
+        Ranking.sort((a,b)=> {return(a-b)});
+        window.localStorage.setItem("Ranking", JSON.stringify(Ranking));
+        RenewalRecord();
+    }
+}
+
+function RenewalRecord() {
+    const Data = window.localStorage.getItem("Ranking");
+    if (Data) {
+        Ranking = JSON.parse(Data);
+    }
+    RecordPanel.innerHTML = "";
+    let h3 = document.createElement('h3');
+    h3.innerHTML = "기록";
+    RecordPanel.appendChild(h3);
+
+    for (let i = 0; i < Ranking.length; i++) {
+        let p = document.createElement('p');
+        p.innerHTML = `${i+1}. ${Ranking[i]} ms`;
+        RecordPanel.appendChild(p);
+    }
+
+}
+
+RenewalRecord();
